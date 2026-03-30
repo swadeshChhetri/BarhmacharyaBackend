@@ -18,10 +18,20 @@ const PostSchema = new Schema(
       type: String,
       default: null,
     },
+    thumbnailUrl: {
+      type: String,
+      default: null,
+    },
     visibility: {
       type: String,
       enum: ["PUBLIC", "PRIVATE"],
       default: "PUBLIC",
+      index: true,
+    },
+    postType: {
+      type: String,
+      enum: ["POST", "LIVE"],
+      default: "POST",
       index: true,
     },
     deletedAt: {

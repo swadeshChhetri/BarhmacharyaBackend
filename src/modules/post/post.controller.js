@@ -10,7 +10,8 @@ class PostController {
       const post = await postService.createPost({
         userId: req.user._id,
         content: req.body.content,
-        videoKey: req.body.videoKey
+        videoKey: req.body.videoKey,
+        postType: req.body.postType,
       });
 
       res.status(201).json({ success: true, data: post });

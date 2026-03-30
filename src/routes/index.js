@@ -9,6 +9,7 @@ import express from "express";
 import authRoutes from "../modules/userAuth/auth.routes.js";
 import postRoutes from "../modules/post/post.routes.js";
 import uploadRoutes from "../upload/upload.routes.js";
+import videoRoutes from "../modules/video/video.routes.js";
 // import corporateAuthRoutes from "../modules/corporateAuth/corporateAuth.routes.js";
 
 // ─────────────────────────────
@@ -60,6 +61,7 @@ const router = express.Router();
 router.use("/auth", authRoutes);
 router.use("/posts", postRoutes);
 router.use("/uploads", uploadRoutes);
+router.use("/videos", videoRoutes);
 // router.use("/corporate-auth", corporateAuthRoutes);
 
 /* =========================
