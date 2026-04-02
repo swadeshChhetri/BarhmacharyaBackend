@@ -10,6 +10,7 @@ import authRoutes from "../modules/userAuth/auth.routes.js";
 import postRoutes from "../modules/post/post.routes.js";
 import uploadRoutes from "../upload/upload.routes.js";
 import videoRoutes from "../modules/video/video.routes.js";
+import productRoutes from "../modules/product/product.routes.js";
 // import corporateAuthRoutes from "../modules/corporateAuth/corporateAuth.routes.js";
 
 // ─────────────────────────────
@@ -114,5 +115,6 @@ ADMIN (STRICT / DOMAIN-SPECIFIC)
 // router.use("/admin/payouts", verifyUserAuth, isAdmin, payoutRoutes);
 // router.use("/admin/reports", verifyUserAuth, isAdmin, reportRoutes);
 // router.use("/admin/orders", verifyUserAuth, isAdmin, orderRoutes);
+router.use("/admin/products", productRoutes);
 
 export default router;
