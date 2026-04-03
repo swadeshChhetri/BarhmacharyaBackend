@@ -2,11 +2,13 @@ import { productService } from "./product.service.js";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { uploadToS3 } from "../../services/s3.service.js";
 
-// Configure multer for local storage
+// Configure multer for local storage (temporarily)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const dir = "uploads/products";
+    // Use /tmp for production (persistent files go to S3)
+    const dir = process.env.NODE_ENV === "production" ? "/tmp" : "uploads/products";
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -52,6 +54,7 @@ class ProductController {
   }
 
   async createProduct(req, res, next) {
+    let tempPath = null;
     try {
       const productData = {
         name: req.body.name,
@@ -62,8 +65,16 @@ class ProductController {
       };
 
       if (req.file) {
-        // Store relative path for frontend access
-        productData.imageUrl = `/uploads/products/${req.file.filename}`;
+        tempPath = req.file.path;
+        const key = `products/${req.file.filename}`;
+        
+        // Upload to S3
+        const s3Url = await uploadToS3(tempPath, key);
+        productData.imageUrl = s3Url;
+        
+        // Clean up local file
+        fs.unlinkSync(tempPath);
+        tempPath = null;
       }
 
       const product = await productService.createProduct(productData);
@@ -72,11 +83,15 @@ class ProductController {
         product,
       });
     } catch (err) {
+      if (tempPath && fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
+      }
       next(err);
     }
   }
 
   async updateProduct(req, res, next) {
+    let tempPath = null;
     try {
       const updateData = { ...req.body };
       
@@ -85,18 +100,19 @@ class ProductController {
       if (updateData.stock !== undefined) updateData.stock = Number(updateData.stock);
       
       if (req.file) {
-        updateData.imageUrl = `/uploads/products/${req.file.filename}`;
+        tempPath = req.file.path;
+        const key = `products/${req.file.filename}`;
         
-        // Optional: Delete old image if it exists
-        try {
-          const oldProduct = await productService.getProductById(req.params.id);
-          if (oldProduct.imageUrl && oldProduct.imageUrl.startsWith("/uploads/")) {
-            const oldPath = path.join(process.cwd(), oldProduct.imageUrl);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-          }
-        } catch (e) {
-          console.error("Failed to delete old image:", e);
-        }
+        // Upload to S3
+        const s3Url = await uploadToS3(tempPath, key);
+        updateData.imageUrl = s3Url;
+        
+        // Clean up local file
+        fs.unlinkSync(tempPath);
+        tempPath = null;
+
+        // Optional: Delete old image if it exists on S3
+        // Note: You might want a deleteFromS3 function for this
       }
 
       const product = await productService.updateProduct(req.params.id, updateData);
@@ -105,6 +121,9 @@ class ProductController {
         product,
       });
     } catch (err) {
+      if (tempPath && fs.existsSync(tempPath)) {
+        fs.unlinkSync(tempPath);
+      }
       next(err);
     }
   }

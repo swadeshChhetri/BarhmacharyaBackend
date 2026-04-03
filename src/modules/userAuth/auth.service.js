@@ -85,6 +85,8 @@ export const AuthService = {
         _id: user._id,
         email: user.email,
         fullName: user.fullName,
+        phone: user.phone,
+        profileImage: user.profileImage,
         role: user.role,
       },
     };
@@ -218,5 +220,27 @@ export const AuthService = {
     );
 
     return { userId: user._id };
+  },
+
+  updateProfile: async (userId, updateData) => {
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      const err = new Error("User not found");
+      err.statusCode = 404;
+      throw err;
+    }
+
+    return {
+      _id: user._id,
+      email: user.email,
+      fullName: user.fullName,
+      phone: user.phone,
+      profileImage: user.profileImage,
+    };
   },
 };

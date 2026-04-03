@@ -34,6 +34,7 @@ export const verifyUserAuth = async (req, res, next) => {
       // role: user.role,
       phone: user.phone,
       status: user.status,
+      profileImage: user.profileImage,
 
       // 🔑 from JWT — DO NOT DROP
       client: decoded.client,

@@ -34,6 +34,11 @@ const UserSchema = new mongoose.Schema(
       enum: ["active", "pending", "blocked"],
       default: "pending",
     },
+
+    profileImage: {
+      type: String,
+      default: null,
+    },
     
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
