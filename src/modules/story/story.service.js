@@ -36,7 +36,7 @@ class StoryService {
     }
 
     let expiryDate = null;
-    if (expiryHours) {
+    if (expiryHours && expiryHours !== "0") {
       expiryDate = new Date();
       expiryDate.setHours(expiryDate.getHours() + parseInt(expiryHours));
     }
