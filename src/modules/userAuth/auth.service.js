@@ -30,7 +30,7 @@ export const AuthService = {
       email,
       password: hashedPassword,
       phone,
-      status: "active",
+      status: "Normal",
     });
 
     // await agentModel.create({
@@ -66,7 +66,7 @@ export const AuthService = {
       throw err;
     }
 
-    if (user.status !== "active") {
+    if (!["active", "Normal", "TOP_MEMBERS"].includes(user.status)) {
       const err = new Error("User account is not active");
       err.statusCode = 403;
       throw err;
@@ -156,7 +156,7 @@ export const AuthService = {
     const user = await userModel.findOne({ email }).select("+fullName +email");
 
     // Prevent enumeration — always return success to caller.
-    if (!user || user.status !== "active") {
+    if (!user || !["active", "Normal", "TOP_MEMBERS"].includes(user.status)) {
       return; // controller returns generic success
     }
 

@@ -23,7 +23,7 @@ export const verifyUserAuth = async (req, res, next) => {
     }
 
     const user = await userModel.findById(decoded.sub).select("-password");
-    if (!user || user.status !== "active") {
+    if (!user || !["active", "Normal", "TOP_MEMBERS"].includes(user.status)) {
       return res.status(401).json({ message: "user not found or inactive" });
     }
 
@@ -31,7 +31,7 @@ export const verifyUserAuth = async (req, res, next) => {
       _id: user._id,
       email: user.email,
       fullName: user.fullName,
-      // role: user.role,
+      role: user.role,
       phone: user.phone,
       status: user.status,
       profileImage: user.profileImage,

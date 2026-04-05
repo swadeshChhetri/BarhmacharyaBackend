@@ -7,10 +7,12 @@ import express from "express";
 // Auth & User-related modules
 // ─────────────────────────────
 import authRoutes from "../modules/userAuth/auth.routes.js";
+import userRoutes from "../modules/user/user.routes.js";
 import postRoutes from "../modules/post/post.routes.js";
 import uploadRoutes from "../upload/upload.routes.js";
 import videoRoutes from "../modules/video/video.routes.js";
 import productRoutes from "../modules/product/product.routes.js";
+import storyRoutes from "../modules/story/story.routes.js";
 // import corporateAuthRoutes from "../modules/corporateAuth/corporateAuth.routes.js";
 
 // ─────────────────────────────
@@ -63,6 +65,7 @@ router.use("/auth", authRoutes);
 router.use("/posts", postRoutes);
 router.use("/uploads", uploadRoutes);
 router.use("/videos", videoRoutes);
+router.use("/stories", storyRoutes);
 // router.use("/corporate-auth", corporateAuthRoutes);
 
 /* =========================
@@ -116,5 +119,7 @@ ADMIN (STRICT / DOMAIN-SPECIFIC)
 // router.use("/admin/reports", verifyUserAuth, isAdmin, reportRoutes);
 // router.use("/admin/orders", verifyUserAuth, isAdmin, orderRoutes);
 router.use("/admin/products", productRoutes);
+router.use("/admin/users", userRoutes);
+router.use("/users", userRoutes);
 
 export default router;

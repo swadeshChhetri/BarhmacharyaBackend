@@ -31,8 +31,14 @@ const UserSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["active", "pending", "blocked"],
-      default: "pending",
+      enum: ["active", "pending", "blocked", "Normal", "TOP_MEMBERS"],
+      default: "Normal",
+    },
+
+    role: {
+      type: String,
+      enum: ["Admin", "User"],
+      default: "User",
     },
 
     profileImage: {
