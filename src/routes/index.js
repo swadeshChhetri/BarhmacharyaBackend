@@ -13,6 +13,7 @@ import uploadRoutes from "../upload/upload.routes.js";
 import videoRoutes from "../modules/video/video.routes.js";
 import productRoutes from "../modules/product/product.routes.js";
 import storyRoutes from "../modules/story/story.routes.js";
+import orderRoutes from "../modules/order/order.routes.js";
 // import corporateAuthRoutes from "../modules/corporateAuth/corporateAuth.routes.js";
 
 // ─────────────────────────────
@@ -121,5 +122,6 @@ ADMIN (STRICT / DOMAIN-SPECIFIC)
 router.use("/admin/products", productRoutes);
 router.use("/admin/users", userRoutes);
 router.use("/users", userRoutes);
+router.use("/orders", orderRoutes);
 
 export default router;
