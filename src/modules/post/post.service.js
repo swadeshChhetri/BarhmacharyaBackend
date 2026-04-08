@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { postRepository } from "./post.repository.js";
+import User from "../user/user.model.js";
 import { downloadVideo } from "../../utils/download.util.js";
 import { generateThumbnail } from "../../services/ffmpeg.service.js";
 import { uploadToS3 } from "../../services/s3.service.js";
@@ -8,7 +9,7 @@ import path from "path";
 import os from "os";
 
 class PostService {
-  async createPost({ userId, content, videoKey, postType }) {
+  async createPost({ userId, content, videoKey, postType, startChallenge }) {
     if (!content && !videoKey) {
       throw new Error("Post cannot be empty");
     }
@@ -19,6 +20,21 @@ class PostService {
 
     let videoUrl = null;
     let thumbnailUrl = null;
+    let day = null;
+
+    // Handle Challenge Progress
+    if (startChallenge) {
+      const user = await User.findById(userId);
+      if (user) {
+        day = user.currentDay;
+        
+        // Update user progress
+        await User.findByIdAndUpdate(userId, {
+          $addToSet: { completedDays: day },
+          $inc: { currentDay: 1 }
+        });
+      }
+    }
 
     if (videoKey) {
       videoUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${videoKey}`;
@@ -61,6 +77,7 @@ class PostService {
       videoUrl: videoUrl,
       thumbnailUrl: thumbnailUrl,
       postType: postType || "POST",
+      day: day,
     });
   }
 

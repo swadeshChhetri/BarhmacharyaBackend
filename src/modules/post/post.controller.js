@@ -12,6 +12,7 @@ class PostController {
         content: req.body.content,
         videoKey: req.body.videoKey,
         postType: req.body.postType,
+        startChallenge: req.body.startChallenge,
       });
 
       res.status(201).json({ success: true, data: post });

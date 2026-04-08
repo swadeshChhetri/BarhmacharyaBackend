@@ -34,6 +34,11 @@ const PostSchema = new Schema(
       default: "POST",
       index: true,
     },
+    day: {
+      type: Number,
+      default: null,
+      index: true,
+    },
     deletedAt: {
       type: Date,
       default: null,

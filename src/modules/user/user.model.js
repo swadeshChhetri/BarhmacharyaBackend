@@ -46,6 +46,16 @@ const UserSchema = new mongoose.Schema(
       default: null,
     },
     
+    currentDay: {
+      type: Number,
+      default: 1,
+    },
+
+    completedDays: {
+      type: [Number],
+      default: [],
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // admin
