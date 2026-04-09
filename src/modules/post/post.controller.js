@@ -58,6 +58,31 @@ class PostController {
       res.status(500).json({ success: false, message: err.message });
     }
   };
+
+  getAllPostsForAdmin = async (req, res) => {
+    try {
+      const posts = await postService.getAllPosts({
+        limit: Number(req.query.limit) || 20,
+        cursor: req.query.cursor,
+      });
+
+      res.json({ success: true, data: posts });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  };
+
+  adminDeletePost = async (req, res) => {
+    try {
+      await postService.adminDeletePost({
+        postId: req.params.postId,
+      });
+
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  };
 }
 
 export const postController = new PostController();

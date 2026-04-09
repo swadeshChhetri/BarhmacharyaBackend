@@ -92,6 +92,14 @@ class PostService {
   deletePost({ postId, userId }) {
     return postRepository.softDelete({ postId, userId });
   }
+
+  getAllPosts({ limit = 20, cursor }) {
+    return postRepository.findAll({ limit, cursor });
+  }
+
+  adminDeletePost({ postId }) {
+    return postRepository.softDelete({ postId });
+  }
 }
 
 export const postService = new PostService();

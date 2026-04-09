@@ -32,10 +32,30 @@ class PostRepository {
   }
 
   softDelete({ postId, userId }) {
+    const query = { _id: postId };
+    if (userId) {
+      query.userId = userId;
+    }
     return PostModel.updateOne(
-      { _id: postId, userId },
+      query,
       { deletedAt: new Date() }
     );
+  }
+
+  findAll({ limit, cursor }) {
+    const query = {
+      deletedAt: null,
+    };
+
+    if (cursor) {
+      query._id = { $lt: cursor };
+    }
+
+    return PostModel.find(query)
+      .populate("userId", "fullName email profileImage")
+      .sort({ _id: -1 })
+      .limit(limit)
+      .lean();
   }
 }
 
