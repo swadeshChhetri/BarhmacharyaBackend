@@ -88,6 +88,9 @@ export const AuthService = {
         phone: user.phone,
         profileImage: user.profileImage,
         role: user.role,
+        currentDay: user.currentDay,
+        completedDays: user.completedDays,
+        coins: user.coins,
       },
     };
   },
@@ -241,6 +244,10 @@ export const AuthService = {
       fullName: user.fullName,
       phone: user.phone,
       profileImage: user.profileImage,
+      role: user.role,
+      currentDay: user.currentDay,
+      completedDays: user.completedDays,
+      coins: user.coins,
     };
   },
 };

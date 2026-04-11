@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { postRepository } from "./post.repository.js";
+import { PostModel } from "./post.model.js";
 import User from "../user/user.model.js";
 import { downloadVideo } from "../../utils/download.util.js";
 import { generateThumbnail } from "../../services/ffmpeg.service.js";
@@ -31,7 +32,7 @@ class PostService {
         // Update user progress
         await User.findByIdAndUpdate(userId, {
           $addToSet: { completedDays: day },
-          $inc: { currentDay: 1 }
+          $inc: { currentDay: 1, coins: 1 }
         });
       }
     }
@@ -89,16 +90,73 @@ class PostService {
     return postRepository.findByUser({ userId, limit });
   }
 
-  deletePost({ postId, userId }) {
-    return postRepository.softDelete({ postId, userId });
+  async deletePost({ postId, userId }) {
+    const post = await PostModel.findOne({ _id: postId, userId });
+    if (!post) throw new Error("Post not found");
+
+    const result = await postRepository.softDelete({ postId, userId });
+
+    if (post.day) {
+      await User.findByIdAndUpdate(post.userId, {
+        $pull: { completedDays: post.day },
+        $inc: { coins: -1 }
+      });
+
+      // Ensure coins don't go negative
+      await User.updateOne(
+        { _id: post.userId, coins: { $lt: 0 } },
+        { $set: { coins: 0 } }
+      );
+
+      // After pulling, let's find the new currentDay
+      const updatedUser = await User.findById(post.userId);
+      if (updatedUser) {
+        const completed = new Set(updatedUser.completedDays);
+        let nextDay = 1;
+        while (completed.has(nextDay)) {
+          nextDay++;
+        }
+        await User.findByIdAndUpdate(post.userId, { currentDay: nextDay });
+      }
+    }
+
+    return result;
   }
 
   getAllPosts({ limit = 20, cursor }) {
     return postRepository.findAll({ limit, cursor });
   }
 
-  adminDeletePost({ postId }) {
-    return postRepository.softDelete({ postId });
+  async adminDeletePost({ postId }) {
+    const post = await PostModel.findById(postId);
+    if (!post) throw new Error("Post not found");
+
+    const result = await postRepository.softDelete({ postId });
+
+    if (post.day) {
+      await User.findByIdAndUpdate(post.userId, {
+        $pull: { completedDays: post.day },
+        $inc: { coins: -1 }
+      });
+
+      // Ensure coins don't go negative
+      await User.updateOne(
+        { _id: post.userId, coins: { $lt: 0 } },
+        { $set: { coins: 0 } }
+      );
+
+      const updatedUser = await User.findById(post.userId);
+      if (updatedUser) {
+        const completed = new Set(updatedUser.completedDays);
+        let nextDay = 1;
+        while (completed.has(nextDay)) {
+          nextDay++;
+        }
+        await User.findByIdAndUpdate(post.userId, { currentDay: nextDay });
+      }
+    }
+
+    return result;
   }
 }
 
