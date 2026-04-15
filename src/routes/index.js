@@ -14,6 +14,7 @@ import videoRoutes from "../modules/video/video.routes.js";
 import productRoutes from "../modules/product/product.routes.js";
 import storyRoutes from "../modules/story/story.routes.js";
 import orderRoutes from "../modules/order/order.routes.js";
+import fundRoutes from "../modules/fund/fund.routes.js";
 // import corporateAuthRoutes from "../modules/corporateAuth/corporateAuth.routes.js";
 
 // ─────────────────────────────
@@ -123,5 +124,6 @@ router.use("/admin/products", productRoutes);
 router.use("/admin/users", userRoutes);
 router.use("/users", userRoutes);
 router.use("/orders", orderRoutes);
+router.use("/funds", fundRoutes);
 
 export default router;
