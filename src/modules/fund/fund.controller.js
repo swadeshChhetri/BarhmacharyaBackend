@@ -39,6 +39,16 @@ export const updateApplicationStatus = async (req, res) => {
   }
 };
 
+export const deleteApplication = async (req, res) => {
+  try {
+    const { appId } = req.params;
+    await fundService.deleteApplication(appId);
+    res.json({ success: true, message: "Application deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const getFundStats = async (req, res) => {
   try {
     const stats = await fundService.getFundStats();

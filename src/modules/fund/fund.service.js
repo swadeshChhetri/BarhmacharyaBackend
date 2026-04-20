@@ -29,6 +29,10 @@ export const updateApplicationStatus = async (appId, { status, approvedAmount, a
   );
 };
 
+export const deleteApplication = async (appId) => {
+  return await FundingApplication.findByIdAndDelete(appId);
+};
+
 export const getFundPool = async () => {
   let pool = await FundPool.findOne();
   if (!pool) {
