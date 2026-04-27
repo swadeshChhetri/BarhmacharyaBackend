@@ -16,6 +16,7 @@ class PostRepository {
     }
 
     return PostModel.find(query)
+      .populate("userId", "fullName email profileImage")
       .sort({ _id: -1 })
       .limit(limit)
       .lean();
@@ -26,6 +27,7 @@ class PostRepository {
       userId,
       deletedAt: null,
     })
+      .populate("userId", "fullName email profileImage")
       .sort({ _id: -1 })
       .limit(limit)
       .lean();

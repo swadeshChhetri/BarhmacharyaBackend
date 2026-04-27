@@ -1,5 +1,7 @@
 import { OrderModel } from "./order.model.js";
 
+export { OrderModel };
+
 export const createOrder = async (orderData) => {
   const order = new OrderModel(orderData);
   return await order.save();
@@ -17,10 +19,10 @@ export const getAllOrders = async () => {
   return await OrderModel.find().populate("user").sort({ createdAt: -1 });
 };
 
-export const updateOrderStatus = async (orderId, status) => {
+export const updateOrder = async (orderId, updateData) => {
   return await OrderModel.findByIdAndUpdate(
     orderId,
-    { orderStatus: status },
+    updateData,
     { new: true }
   );
 };

@@ -114,11 +114,7 @@ export const handleUpdateOrderStatus = async (req, res) => {
     if (orderStatus) updateData.orderStatus = orderStatus;
     if (paymentStatus) updateData.paymentStatus = paymentStatus;
 
-    const order = await orderService.OrderModel.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true }
-    );
+    const order = await orderService.updateOrder(id, updateData);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });

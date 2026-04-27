@@ -29,11 +29,16 @@ class PostService {
       if (user) {
         day = user.currentDay;
         
-        // Update user progress
-        await User.findByIdAndUpdate(userId, {
-          $addToSet: { completedDays: day },
-          $inc: { currentDay: 1, coins: 1 }
-        });
+        // Check if user already has a post for this day to avoid double counting
+        const existingPost = await PostModel.findOne({ userId, day, deletedAt: null });
+        
+        if (!existingPost) {
+          // Update user progress only if no post exists for this day
+          await User.findByIdAndUpdate(userId, {
+            $addToSet: { completedDays: day },
+            $inc: { currentDay: 1, coins: 1 }
+          });
+        }
       }
     }
 
@@ -91,33 +96,13 @@ class PostService {
   }
 
   async deletePost({ postId, userId }) {
-    const post = await PostModel.findOne({ _id: postId, userId });
+    const post = await PostModel.findOne({ _id: postId, userId, deletedAt: null });
     if (!post) throw new Error("Post not found");
 
     const result = await postRepository.softDelete({ postId, userId });
-
-    if (post.day) {
-      await User.findByIdAndUpdate(post.userId, {
-        $pull: { completedDays: post.day },
-        $inc: { coins: -1 }
-      });
-
-      // Ensure coins don't go negative
-      await User.updateOne(
-        { _id: post.userId, coins: { $lt: 0 } },
-        { $set: { coins: 0 } }
-      );
-
-      // After pulling, let's find the new currentDay
-      const updatedUser = await User.findById(post.userId);
-      if (updatedUser) {
-        const completed = new Set(updatedUser.completedDays);
-        let nextDay = 1;
-        while (completed.has(nextDay)) {
-          nextDay++;
-        }
-        await User.findByIdAndUpdate(post.userId, { currentDay: nextDay });
-      }
+    
+    if (post.day !== null && post.day !== undefined) {
+      await this._reverseChallengeProgress(post.userId, post.day);
     }
 
     return result;
@@ -128,35 +113,51 @@ class PostService {
   }
 
   async adminDeletePost({ postId }) {
-    const post = await PostModel.findById(postId);
+    const post = await PostModel.findOne({ _id: postId, deletedAt: null });
     if (!post) throw new Error("Post not found");
 
     const result = await postRepository.softDelete({ postId });
 
-    if (post.day) {
-      await User.findByIdAndUpdate(post.userId, {
-        $pull: { completedDays: post.day },
-        $inc: { coins: -1 }
-      });
-
-      // Ensure coins don't go negative
-      await User.updateOne(
-        { _id: post.userId, coins: { $lt: 0 } },
-        { $set: { coins: 0 } }
-      );
-
-      const updatedUser = await User.findById(post.userId);
-      if (updatedUser) {
-        const completed = new Set(updatedUser.completedDays);
-        let nextDay = 1;
-        while (completed.has(nextDay)) {
-          nextDay++;
-        }
-        await User.findByIdAndUpdate(post.userId, { currentDay: nextDay });
-      }
+    if (post.day !== null && post.day !== undefined) {
+      await this._reverseChallengeProgress(post.userId, post.day);
     }
 
     return result;
+  }
+
+  async _reverseChallengeProgress(userId, day) {
+    // 0. Check if there are other posts for this day (that are not soft-deleted)
+    const otherPosts = await PostModel.findOne({
+      userId,
+      day,
+      deletedAt: null
+    });
+
+    // If another post exists for the same day, don't reverse the progress
+    if (otherPosts) return;
+
+    // 1. Remove day from completedDays and decrement coins
+    await User.findByIdAndUpdate(userId, {
+      $pull: { completedDays: day },
+      $inc: { coins: -1 }
+    });
+
+    // 2. Ensure coins don't go negative
+    await User.updateOne(
+      { _id: userId, coins: { $lt: 0 } },
+      { $set: { coins: 0 } }
+    );
+
+    // 3. Recalculate currentDay based on the new completedDays set
+    const updatedUser = await User.findById(userId);
+    if (updatedUser) {
+      const completed = new Set(updatedUser.completedDays);
+      let nextDay = 1;
+      while (completed.has(nextDay)) {
+        nextDay++;
+      }
+      await User.findByIdAndUpdate(userId, { currentDay: nextDay });
+    }
   }
 }
 
