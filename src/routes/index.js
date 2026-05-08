@@ -15,6 +15,7 @@ import productRoutes from "../modules/product/product.routes.js";
 import storyRoutes from "../modules/story/story.routes.js";
 import orderRoutes from "../modules/order/order.routes.js";
 import fundRoutes from "../modules/fund/fund.routes.js";
+import sessionRoutes from "../modules/session/session.routes.js";
 // import corporateAuthRoutes from "../modules/corporateAuth/corporateAuth.routes.js";
 
 // ─────────────────────────────
@@ -125,5 +126,6 @@ router.use("/admin/users", userRoutes);
 router.use("/users", userRoutes);
 router.use("/orders", orderRoutes);
 router.use("/funds", fundRoutes);
+router.use("/sessions", sessionRoutes);
 
 export default router;

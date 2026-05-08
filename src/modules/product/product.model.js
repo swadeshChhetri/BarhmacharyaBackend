@@ -29,6 +29,12 @@ const ProductSchema = new Schema(
       type: String,
       default: null,
     },
+    category: {
+      type: String,
+      enum: ["Pre workout", "Protein", "Health", "Accessories", null],
+      default: null,
+      index: true,
+    },
     stock: {
       type: Number,
       default: 0,
