@@ -12,6 +12,8 @@ export const getAllUsers = async (req, res, next) => {
         phone: user.phone,
         role: user.role,
         status: user.status,
+        coins: user.coins,
+        walletBalance: user.walletBalance,
         joined: user.createdAt.toISOString().split('T')[0]
       }))
     });
@@ -29,6 +31,8 @@ export const getTopMembers = async (req, res, next) => {
         id: user._id,
         name: user.fullName,
         profileImage: user.profileImage,
+        coins: user.coins,
+        walletBalance: user.walletBalance,
         joined: user.createdAt.toISOString().split('T')[0]
       }))
     });
@@ -60,6 +64,8 @@ export const createUser = async (req, res, next) => {
         phone: user.phone,
         role: user.role,
         status: user.status,
+        coins: user.coins,
+        walletBalance: user.walletBalance,
         joined: user.createdAt.toISOString().split('T')[0]
       }
     });
@@ -82,7 +88,51 @@ export const updateUser = async (req, res, next) => {
         phone: user.phone,
         role: user.role,
         status: user.status,
+        coins: user.coins,
+        walletBalance: user.walletBalance,
         joined: user.createdAt.toISOString().split('T')[0]
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUserCoins = async (req, res, next) => {
+  try {
+    const { amount } = req.body;
+    if (amount === undefined) {
+      return res.status(400).json({ message: "Amount is required" });
+    }
+    const user = await UserService.updateCoins(req.params.id, Number(amount));
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({
+      success: true,
+      message: "Coins updated successfully",
+      data: {
+        id: user._id,
+        coins: user.coins
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUserWalletBalance = async (req, res, next) => {
+  try {
+    const { amount } = req.body;
+    if (amount === undefined) {
+      return res.status(400).json({ message: "Amount is required" });
+    }
+    const user = await UserService.updateWalletBalance(req.params.id, Number(amount));
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({
+      success: true,
+      message: "Wallet balance updated successfully",
+      data: {
+        id: user._id,
+        walletBalance: user.walletBalance
       }
     });
   } catch (error) {

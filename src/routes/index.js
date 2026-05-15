@@ -16,6 +16,8 @@ import storyRoutes from "../modules/story/story.routes.js";
 import orderRoutes from "../modules/order/order.routes.js";
 import fundRoutes from "../modules/fund/fund.routes.js";
 import sessionRoutes from "../modules/session/session.routes.js";
+import notificationRoutes from "../modules/notification/notification.routes.js";
+import membershipRoutes from "../modules/membership/membership.routes.js";
 // import corporateAuthRoutes from "../modules/corporateAuth/corporateAuth.routes.js";
 
 // ─────────────────────────────
@@ -124,8 +126,11 @@ ADMIN (STRICT / DOMAIN-SPECIFIC)
 router.use("/admin/products", productRoutes);
 router.use("/admin/users", userRoutes);
 router.use("/users", userRoutes);
+router.use("/users/notifications", notificationRoutes);
 router.use("/orders", orderRoutes);
 router.use("/funds", fundRoutes);
 router.use("/sessions", sessionRoutes);
+router.use("/notifications", notificationRoutes);
+router.use("/membership", membershipRoutes);
 
 export default router;

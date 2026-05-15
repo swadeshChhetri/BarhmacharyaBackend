@@ -61,6 +61,11 @@ const UserSchema = new mongoose.Schema(
       default: 0,
     },
 
+    walletBalance: {
+      type: Number,
+      default: 0,
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // admin

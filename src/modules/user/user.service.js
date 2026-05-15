@@ -50,4 +50,20 @@ export class UserService {
   static async deleteUser(id) {
     return await User.findByIdAndDelete(id);
   }
+
+  static async updateCoins(id, amount) {
+    return await User.findByIdAndUpdate(
+      id,
+      { $inc: { coins: amount } },
+      { new: true }
+    );
+  }
+
+  static async updateWalletBalance(id, amount) {
+    return await User.findByIdAndUpdate(
+      id,
+      { $inc: { walletBalance: amount } },
+      { new: true }
+    );
+  }
 }

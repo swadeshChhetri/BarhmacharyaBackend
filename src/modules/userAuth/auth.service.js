@@ -91,6 +91,7 @@ export const AuthService = {
         currentDay: user.currentDay,
         completedDays: user.completedDays,
         coins: user.coins,
+        walletBalance: user.walletBalance,
       },
     };
   },
@@ -248,6 +249,7 @@ export const AuthService = {
       currentDay: user.currentDay,
       completedDays: user.completedDays,
       coins: user.coins,
+      walletBalance: user.walletBalance,
     };
   },
 };

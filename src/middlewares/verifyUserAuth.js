@@ -38,6 +38,7 @@ export const verifyUserAuth = async (req, res, next) => {
       currentDay: user.currentDay,
       completedDays: user.completedDays,
       coins: user.coins,
+      walletBalance: user.walletBalance,
 
       // 🔑 from JWT — DO NOT DROP
       client: decoded.client,

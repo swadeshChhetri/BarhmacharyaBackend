@@ -8,6 +8,10 @@ class ProductService {
       filter.status = query.status;
     }
 
+    if (query.category) {
+      filter.category = query.category;
+    }
+
     return ProductModel.find(filter).sort({ createdAt: -1 }).lean();
   }
 

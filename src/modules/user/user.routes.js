@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser, getTopMembers } from "./user.controller.js";
+import { getAllUsers, getUserById, createUser, updateUser, deleteUser, getTopMembers, updateUserCoins, updateUserWalletBalance } from "./user.controller.js";
 import { verifyUserAuth } from "../../middlewares/verifyUserAuth.js";
 import { isAdmin } from "../../middlewares/isAdmin.js";
 
@@ -15,6 +15,8 @@ router.get("/", getAllUsers);
 router.get("/:id", getUserById);
 router.post("/", createUser);
 router.put("/:id", updateUser);
+router.patch("/:id/coins", updateUserCoins);
+router.patch("/:id/wallet", updateUserWalletBalance);
 router.delete("/:id", deleteUser);
 
 export default router;

@@ -59,7 +59,7 @@ class ProductController {
       const productData = {
         name: req.body.name,
         details: req.body.details,
-        category: req.body.category,
+        category: req.body.category || null,
         price: Number(req.body.price),
         discount: Number(req.body.discount || 0),
         stock: Number(req.body.stock || 0),
@@ -99,7 +99,7 @@ class ProductController {
       if (updateData.price !== undefined) updateData.price = Number(updateData.price);
       if (updateData.discount !== undefined) updateData.discount = Number(updateData.discount);
       if (updateData.stock !== undefined) updateData.stock = Number(updateData.stock);
-      if (updateData.category !== undefined) updateData.category = updateData.category;
+      if (updateData.category !== undefined) updateData.category = updateData.category || null;
       
       if (req.file) {
         tempPath = req.file.path;

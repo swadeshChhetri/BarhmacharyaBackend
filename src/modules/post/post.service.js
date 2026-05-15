@@ -23,6 +23,25 @@ class PostService {
     let thumbnailUrl = null;
     let day = null;
 
+    // Enforce 1 video per day limit
+    if (videoKey) {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+
+      const existingVideoPostToday = await PostModel.findOne({
+        userId,
+        videoUrl: { $ne: null },
+        deletedAt: null,
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      });
+
+      if (existingVideoPostToday) {
+        throw new Error("You have already posted a video today. Only one video per day is allowed.");
+      }
+    }
+
     // Handle Challenge Progress
     if (startChallenge) {
       const user = await User.findById(userId);
