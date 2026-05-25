@@ -14,7 +14,14 @@ export const getAllUsers = async (req, res, next) => {
         status: user.status,
         coins: user.coins,
         walletBalance: user.walletBalance,
-        joined: user.createdAt.toISOString().split('T')[0]
+        joined: user.createdAt.toISOString().split('T')[0],
+        referralCode: user.referralCode,
+        referredBy: user.referredBy ? {
+          id: user.referredBy._id,
+          name: user.referredBy.fullName,
+          email: user.referredBy.email,
+          phone: user.referredBy.phone
+        } : null
       }))
     });
   } catch (error) {
@@ -66,7 +73,8 @@ export const createUser = async (req, res, next) => {
         status: user.status,
         coins: user.coins,
         walletBalance: user.walletBalance,
-        joined: user.createdAt.toISOString().split('T')[0]
+        joined: user.createdAt.toISOString().split('T')[0],
+        referralCode: user.referralCode
       }
     });
   } catch (error) {
@@ -90,7 +98,8 @@ export const updateUser = async (req, res, next) => {
         status: user.status,
         coins: user.coins,
         walletBalance: user.walletBalance,
-        joined: user.createdAt.toISOString().split('T')[0]
+        joined: user.createdAt.toISOString().split('T')[0],
+        referralCode: user.referralCode
       }
     });
   } catch (error) {

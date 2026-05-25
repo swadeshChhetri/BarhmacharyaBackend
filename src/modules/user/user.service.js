@@ -16,7 +16,9 @@ export class UserService {
     if (role) filter.role = role;
     if (status) filter.status = status;
 
-    return await User.find(filter).sort({ createdAt: -1 });
+    return await User.find(filter)
+      .populate("referredBy", "fullName email phone")
+      .sort({ createdAt: -1 });
   }
 
   static async getUserById(id) {

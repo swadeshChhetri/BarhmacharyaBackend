@@ -8,8 +8,33 @@ import { hashInviteToken } from "../../utils/inviteToken.js";
 import { generatePasswordResetToken, hashPasswordResetToken } from "../../utils/passwordResetToken.js";
 // import { sendPasswordResetEmail } from "../../core/email.service.js";
 
+import { randomBytes } from "crypto";
+
+const generateUniqueReferralCode = async (fullName) => {
+  const prefix = fullName
+    ? fullName.substring(0, 4).toUpperCase().replace(/[^A-Z]/g, "")
+    : "BM";
+  let isUnique = false;
+  let code = "";
+  let attempts = 0;
+  while (!isUnique && attempts < 10) {
+    const suffix = randomBytes(2).toString("hex").toUpperCase();
+    code = `${prefix}${suffix}`;
+    const exists = await userModel.findOne({ referralCode: code });
+    if (!exists) {
+      isUnique = true;
+    }
+    attempts++;
+  }
+  // Fallback if loop failed (should not happen)
+  if (!isUnique) {
+    code = `${prefix}${Date.now().toString().slice(-4)}`;
+  }
+  return code;
+};
+
 export const AuthService = {
-  registerAgent: async ({ fullName, email, phone, password }) => {
+  registerAgent: async ({ fullName, email, phone, password, referralCode }) => {
     if (!fullName || !email || !phone || !password) {
       const err = new Error("All fields are required");
       err.statusCode = 400;
@@ -23,6 +48,24 @@ export const AuthService = {
       throw err;
     }
 
+    let referredById = null;
+    if (referralCode && referralCode.trim() !== "") {
+      const referrer = await userModel.findOne({
+        referralCode: referralCode.trim().toUpperCase(),
+      });
+      if (!referrer) {
+        const err = new Error("Invalid referral code");
+        err.statusCode = 400;
+        throw err;
+      }
+      referredById = referrer._id;
+
+      // Reward the referrer with 50 coins
+      referrer.coins = (referrer.coins || 0) + 50;
+      await referrer.save();
+    }
+
+    const myReferralCode = await generateUniqueReferralCode(fullName);
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await userModel.create({
@@ -31,6 +74,8 @@ export const AuthService = {
       password: hashedPassword,
       phone,
       status: "Normal",
+      referralCode: myReferralCode,
+      referredBy: referredById,
     });
 
     // await agentModel.create({
@@ -92,6 +137,7 @@ export const AuthService = {
         completedDays: user.completedDays,
         coins: user.coins,
         walletBalance: user.walletBalance,
+        referralCode: user.referralCode,
       },
     };
   },
@@ -250,6 +296,7 @@ export const AuthService = {
       completedDays: user.completedDays,
       coins: user.coins,
       walletBalance: user.walletBalance,
+      referralCode: user.referralCode,
     };
   },
 };
