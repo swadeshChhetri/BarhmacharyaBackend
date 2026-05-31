@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser, getTopMembers, updateUserCoins, updateUserWalletBalance } from "./user.controller.js";
+import { getAllUsers, getUserById, createUser, updateUser, deleteUser, getTopMembers, updateUserCoins, updateUserWalletBalance, getMyReferrals } from "./user.controller.js";
 import { verifyUserAuth } from "../../middlewares/verifyUserAuth.js";
 import { isAdmin } from "../../middlewares/isAdmin.js";
 
@@ -7,6 +7,9 @@ const router = express.Router();
 
 // Publicly fetch Top Members (or authenticated if you prefer)
 router.get("/top-members", getTopMembers);
+
+// Authenticated user referrals route
+router.get("/my/referrals", verifyUserAuth, getMyReferrals);
 
 // Apply verifyUserAuth and isAdmin to all other user management routes
 router.use(verifyUserAuth, isAdmin);

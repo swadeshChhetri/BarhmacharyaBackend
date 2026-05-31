@@ -45,7 +45,13 @@ export class UserService {
       phone: userData.phone,
       role: userData.role,
       status: userData.status,
+      coins: userData.coins !== undefined ? Number(userData.coins) : undefined,
+      walletBalance: userData.walletBalance !== undefined ? Number(userData.walletBalance) : undefined,
     };
+    
+    // Remove undefined values
+    Object.keys(update).forEach(key => update[key] === undefined && delete update[key]);
+
     return await User.findByIdAndUpdate(id, update, { new: true });
   }
 
@@ -67,5 +73,11 @@ export class UserService {
       { $inc: { walletBalance: amount } },
       { new: true }
     );
+  }
+
+  static async getReferrals(userId) {
+    return await User.find({ referredBy: userId })
+      .select("fullName email profileImage currentDay createdAt status coins")
+      .sort({ createdAt: -1 });
   }
 }

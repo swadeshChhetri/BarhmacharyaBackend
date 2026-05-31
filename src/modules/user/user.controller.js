@@ -157,3 +157,25 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getMyReferrals = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const referrals = await UserService.getReferrals(userId);
+    res.status(200).json({
+      success: true,
+      data: referrals.map(ref => ({
+        id: ref._id,
+        name: ref.fullName,
+        email: ref.email,
+        profileImage: ref.profileImage,
+        currentDay: ref.currentDay,
+        coins: ref.coins,
+        status: ref.status,
+        joined: ref.createdAt.toISOString().split('T')[0]
+      }))
+    });
+  } catch (error) {
+    next(error);
+  }
+};
