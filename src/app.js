@@ -21,6 +21,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
+      "https://brahmacharyaa.vercel.app",
       "https://bhramacharya.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
